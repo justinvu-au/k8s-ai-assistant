@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-ai-assistant
+  labels:
+    app: k8s-ai-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-ai-assistant
+  template:
+    metadata:
+      labels:
+        app: k8s-ai-assistant
+    spec:
+      serviceAccountName: k8s-ai-assistant
+      containers:
+        - name: bot
+          image: plstatsacr.azurecr.io/k8s-ai-assistant:v1
+          env:
+            - name: DISCORD_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: k8s-ai-assistant-secrets
+                  key: discord-bot-token
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: k8s-ai-assistant-secrets
+                  key: anthropic-api-key
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
